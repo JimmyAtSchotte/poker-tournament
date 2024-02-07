@@ -8,4 +8,9 @@
         <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Blazorise.Bootstrap" Version="1.4.2" />
+      <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.4.2" />
+    </ItemGroup>
+
 </Project>
