@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poker tournament", "Poker tournament\Poker tournament.csproj", "{608FD73B-CEDA-411D-94F1-122DB7213F3F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{3CF1F1D2-F6EC-48DC-822F-C1656FD32787}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{608FD73B-CEDA-411D-94F1-122DB7213F3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{608FD73B-CEDA-411D-94F1-122DB7213F3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{608FD73B-CEDA-411D-94F1-122DB7213F3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CF1F1D2-F6EC-48DC-822F-C1656FD32787}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CF1F1D2-F6EC-48DC-822F-C1656FD32787}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CF1F1D2-F6EC-48DC-822F-C1656FD32787}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CF1F1D2-F6EC-48DC-822F-C1656FD32787}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
