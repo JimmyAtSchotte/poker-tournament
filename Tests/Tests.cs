@@ -85,4 +85,29 @@ public class Tests
         Assert.AreEqual(1, scoreTable[1].Scores[1]);
     }
 
+    [Test]
+    public void FromState()
+    {
+        var scoreBoard = new ScoreBoard();
+        scoreBoard.AddPlayer("P1");      
+        scoreBoard.AddPlayer("P2");
+
+        var savedState = scoreBoard.ToString();
+        var scoreTable = ScoreBoard.FromState(savedState).ScoreTable(_scoreAlgorithm);
+
+        Assert.AreEqual(2, scoreTable.Count());
+
+    }
+
+    [Test]
+    public void PlayerToString()
+    {
+        var player = new Player("P1");
+        var player2 = Player.FromState(player.ToString());
+        
+        Assert.AreEqual(player.Name, player2.Name);
+
+
+    }
+
 }

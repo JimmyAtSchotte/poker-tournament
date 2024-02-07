@@ -1,4 +1,6 @@
-﻿namespace Poker_tournament.Scoring;
+﻿using System.Text;
+
+namespace Poker_tournament.Scoring;
 
 public class ScoreBoard
 {
@@ -14,9 +16,15 @@ public class ScoreBoard
     public Player AddPlayer(string name)
     {
         var player = new Player(name);
+        return AddPlayer(player);
+    }
+    
+    private Player AddPlayer(Player player)
+    {
         _players.Add(player);
         return player;
     }
+    
     public IEnumerable<ScoreRow> ScoreTable(IScoreAlgorithm scoreAlgorithm)
     {
         var currentPosition = 1;
@@ -59,5 +67,40 @@ public class ScoreBoard
             if(_currentRoundIndex < _totalRounds-1)
                 _currentRoundIndex += 1;
         }
+    }
+
+    public override string ToString()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine($"{_currentRoundIndex}:{_totalRounds}");
+
+        foreach (var player in _players)
+            stringBuilder.AppendLine(player.ToString());
+        
+        var state = stringBuilder.ToString();
+        
+        var bytes = Encoding.UTF8.GetBytes(state);
+        return Convert.ToBase64String(bytes);
+        
+    }
+
+    public static ScoreBoard FromState(string state)
+    {
+        var bytes = System.Convert.FromBase64String(state);
+        var convertedState = System.Text.Encoding.UTF8.GetString(bytes);
+        
+        var lines = convertedState.Split(Environment.NewLine);
+        var scoreboardConfigArgs = lines[0].Split(":");
+        
+        var scoreBoard = new ScoreBoard();
+        scoreBoard._currentRoundIndex = Convert.ToInt32(scoreboardConfigArgs[0]);
+        scoreBoard._totalRounds = Convert.ToInt32(scoreboardConfigArgs[1]);
+
+        for (int i = 1; i < lines.Length; i++)
+            if(!string.IsNullOrEmpty(lines[i]))
+                scoreBoard.AddPlayer(Player.FromState(lines[i]));
+
+        return scoreBoard;
+
     }
 }

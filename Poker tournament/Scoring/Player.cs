@@ -28,4 +28,19 @@ public class Player
     }
 
     public bool IsOut(int index) => _position[index] > 0;
+
+    public override string ToString()
+    {
+        return $"{Name}:{string.Join(',', _position)}";
+    }
+
+    public static Player FromState(string state)
+    {
+        var args = state.Split(":");
+        var position = args[1].Split(',').Select(x => Convert.ToInt32(x)).ToArray();
+        return new Player(args[0])
+        {
+            _position = position
+        };
+    }
 }
