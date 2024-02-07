@@ -1,5 +1,4 @@
-﻿namespace Tests;
-
+﻿namespace Poker_tournament.Scoring;
 public record ScoreRow
 {
     public Player Player { get; init; }

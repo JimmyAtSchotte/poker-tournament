@@ -1,3 +1,5 @@
+using Poker_tournament.Scoring;
+
 namespace Tests;
 
 public class Tests

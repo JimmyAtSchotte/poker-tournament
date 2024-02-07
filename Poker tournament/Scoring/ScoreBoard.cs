@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Poker_tournament.Scoring;
 
 public class ScoreBoard
 {
@@ -59,14 +59,3 @@ public class ScoreBoard
         }
     }
 }
-
-public interface IScoreAlgorithm
-{
-    int GetScore(int position);
-}
-
-public class OutPositionScoreAlgorithm : IScoreAlgorithm
-{
-    public int GetScore(int position) => position;
-}
-

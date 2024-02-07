@@ -1,4 +1,4 @@
-﻿namespace Tests;
+﻿namespace Poker_tournament.Scoring;
 
 public class Player
 {
