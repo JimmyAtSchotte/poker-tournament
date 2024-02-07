@@ -19,27 +19,28 @@
                                     <TableHeaderCell>Poäng runda 1</TableHeaderCell>
                                     <TableHeaderCell>Poäng runda 2</TableHeaderCell>
                                     <TableHeaderCell>Total poäng</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                @foreach(var player in _players)
+                                @foreach(var row in _scoreBoard.ScoreTable(_scoreAlgorithm))
                                 {
-                                    <TableRow @key="@player.Name">
-                                        <TableRowHeader>1</TableRowHeader>
-                                        <TableRowCell>@player.Name</TableRowCell>
-                                        <TableRowCell>0</TableRowCell>
-                                        <TableRowCell>0</TableRowCell>
-                                        <TableRowCell>0</TableRowCell>
+                                    <TableRow @key="@row.Player.Name">
+                                        <TableRowHeader>@row.Position</TableRowHeader>
+                                        <TableRowCell>@row.Player.Name</TableRowCell>
+                                        <TableRowCell>@row.Scores[0]</TableRowCell>
+                                        <TableRowCell>@row.Scores[1]</TableRowCell>
+                                        <TableRowCell>@row.TotalScore</TableRowCell>
+                                        <TableRowCell>
+                                            @if (row.IsStillInTheGame)
+                                            {
+                                                <Button @onclick="() => Out(row.Player)">Ute</Button>
+                                            }
+                                        </TableRowCell>
                                     </TableRow>
                                 }
                             </TableBody>
                         </Table>
-                        
-                        
-                        @foreach (var player in _players)
-                        {
-                            <p>@player.Name</p>
-                        }
                     </CardText>
                 </CardBody>
             </Card>
@@ -67,12 +68,28 @@
 @code {
     private string name;
 
-    private List<Player> _players = new List<Player>();
+    private ScoreBoard _scoreBoard = new ScoreBoard();
+    private IScoreAlgorithm _scoreAlgorithm = new OutPositionScoreAlgorithm();
+
+    protected override void OnInitialized()
+    {
+        _scoreBoard.AddPlayer("Jimmy");
+        _scoreBoard.AddPlayer("Peter");
+        _scoreBoard.AddPlayer("Patrik");
+        _scoreBoard.AddPlayer("Staffan");
+        
+        base.OnInitialized();
+    }
 
     private void AddPlayer()
     {
-        _players.Add(new Player(name));
+        _scoreBoard.AddPlayer(name);
         name = string.Empty;
+    }
+
+    private void Out(Player player)
+    {
+        _scoreBoard.Out(player);
     }
 
 }

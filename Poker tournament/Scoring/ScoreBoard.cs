@@ -37,7 +37,9 @@ public class ScoreBoard
                     {
                         player.RoundScore(scoreAlgorithm, 0), 
                         player.RoundScore(scoreAlgorithm, 1), 
-                    }
+                    },
+                    TotalScore = player.TotalScore(scoreAlgorithm),
+                    IsStillInTheGame = !player.IsOut(_currentRoundIndex)
                 };
             }
             
