@@ -2,7 +2,7 @@ using Poker_tournament.Scoring;
 
 namespace Tests;
 
-public class Tests
+public class ScoreBoardTests
 {
     private readonly IScoreAlgorithm _scoreAlgorithm = new OutPositionScoreAlgorithm();
     
