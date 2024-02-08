@@ -1,5 +1,6 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@implements IDisposable
 
 <PageTitle>POKER</PageTitle>
 
@@ -41,6 +42,9 @@
                                 }
                             </TableBody>
                         </Table>
+                
+                        <Button @onclick="Undo">Ångra</Button>
+                        <Button @onclick="Redo">Gör om</Button>
                     </CardText>
                 </CardBody>
             </Card>
@@ -65,14 +69,19 @@
     </Row>
 </Container>
 
+
 @code {
     private string name;
 
     private ScoreBoard _scoreBoard = new ScoreBoard();
     private IScoreAlgorithm _scoreAlgorithm = new OutPositionScoreAlgorithm();
-
+    private Memento<string> _memento = new Memento<string>();
+    
+    
     protected override void OnInitialized()
     {
+        _scoreBoard.OnChange += ScoreBoardOnOnChange;
+        
         _scoreBoard.AddPlayer("Jimmy");
         _scoreBoard.AddPlayer("Peter");
         _scoreBoard.AddPlayer("Patrik");
@@ -81,6 +90,7 @@
         base.OnInitialized();
     }
 
+  
     private void AddPlayer()
     {
         _scoreBoard.AddPlayer(name);
@@ -90,6 +100,37 @@
     private void Out(Player player)
     {
         _scoreBoard.Out(player);
+    }
+
+    private void AddSavedState()
+    {
+        _memento.Push(_scoreBoard.ToString());
+    }
+
+    private void Undo()
+    {
+        var restoreState = _memento.Undo();
+        
+        if(!string.IsNullOrEmpty(restoreState))
+            _scoreBoard = ScoreBoard.FromState(restoreState);
+    }
+
+    private void Redo()
+    {
+        var restoreState = _memento.Redo();
+        
+        if(!string.IsNullOrEmpty(restoreState))
+            _scoreBoard = ScoreBoard.FromState(restoreState);
+    }
+    
+    private void ScoreBoardOnOnChange(object? sender, EventArgs e)
+    {
+        _memento.Push(_scoreBoard.ToString());
+    }
+
+    public void Dispose()
+    {
+        _scoreBoard.OnChange -= ScoreBoardOnOnChange;
     }
 
 }

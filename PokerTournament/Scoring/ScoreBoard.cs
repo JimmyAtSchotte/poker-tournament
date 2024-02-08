@@ -8,6 +8,8 @@ public class ScoreBoard
     private int _currentRoundIndex = 0;
     private int _totalRounds = 2;
     
+    public event EventHandler OnChange;
+    
     public ScoreBoard()
     {
         _players = new List<Player>();
@@ -16,6 +18,9 @@ public class ScoreBoard
     public Player AddPlayer(string name)
     {
         var player = new Player(name);
+        
+        OnChange?.Invoke(this, EventArgs.Empty);
+        
         return AddPlayer(player);
     }
     
@@ -67,6 +72,8 @@ public class ScoreBoard
             if(_currentRoundIndex < _totalRounds-1)
                 _currentRoundIndex += 1;
         }
+        
+        OnChange?.Invoke(this, EventArgs.Empty);
     }
 
     public override string ToString()

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poker tournament", "Poker tournament\Poker tournament.csproj", "{608FD73B-CEDA-411D-94F1-122DB7213F3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerTournament", "PokerTournament\PokerTournament.csproj", "{608FD73B-CEDA-411D-94F1-122DB7213F3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{3CF1F1D2-F6EC-48DC-822F-C1656FD32787}"
 EndProject
