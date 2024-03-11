@@ -1,4 +1,6 @@
-﻿namespace Poker_tournament.Scoring;
+﻿using System.Text.Json;
+
+namespace Poker_tournament.Scoring;
 
 public class Memento<T>
 {
@@ -8,7 +10,7 @@ public class Memento<T>
     public Memento()
     {
         _mementos = new List<T>();
-        _index = 0;
+        _index = -1;
     }
 
     public void Push(T state)
@@ -22,7 +24,7 @@ public class Memento<T>
     
     public T Undo()
     {
-        if (_index == 0)
+        if (_index <= 0)
             return _mementos.FirstOrDefault();
         
         _index -= 1;
@@ -37,5 +39,27 @@ public class Memento<T>
         
         _index += 1;
         return _mementos.ElementAt(_index);
+    }
+
+    public bool CanUndo() => _index >= 0;
+    public bool CanRedo() => _mementos.Count > 0 && _index <= _mementos.Count - 1;
+
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(_mementos);
+    }
+
+    public static Memento<T> Create(string input)
+    {
+        var memento = new Memento<T>();
+        memento._mementos = JsonSerializer.Deserialize<IList<T>>(input);
+        
+        return memento;
+    }
+
+    public T GetLastState()
+    {
+        _index = _mementos.Count - 1;
+        return _mementos.LastOrDefault();
     }
 }

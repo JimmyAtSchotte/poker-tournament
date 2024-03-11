@@ -1,0 +1,36 @@
+﻿
+@if(PrizeRows?.Any() == true)
+{
+    <Card  Margin="Margin.Is2">
+        <CardHeader Background="Background.Primary"
+                    TextColor="TextColor.White">
+            Priser
+        </CardHeader>
+        <CardBody>
+            <CardText>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell ColumnSpan="2">Namn</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                        @foreach (var prize in PrizeRows)
+                        {
+                            <TableRow>
+                                <TableRowCell>@prize.Position</TableRowCell>
+                                <TableRowCell>@prize.Prize</TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </CardText>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<PrizeRow> PrizeRows { get; set; }
+}

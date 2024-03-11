@@ -7,6 +7,7 @@ public class ScoreBoard
     private readonly IList<Player> _players;
     private int _currentRoundIndex = 0;
     private int _totalRounds = 2;
+    private bool _playing = false;
     
     public event EventHandler OnChange;
     
@@ -14,7 +15,9 @@ public class ScoreBoard
     {
         _players = new List<Player>();
     }
-    
+
+    public int NumberOfPlayers => _players.Count;
+
     public Player AddPlayer(string name)
     {
         var player = new Player(name);
@@ -23,17 +26,24 @@ public class ScoreBoard
         
         return AddPlayer(player);
     }
+
+    public void StartPlaying()
+    {
+        _playing = true;
+        OnChange?.Invoke(this, EventArgs.Empty);
+    }
     
     private Player AddPlayer(Player player)
     {
         _players.Add(player);
+        OnChange?.Invoke(this, EventArgs.Empty);
         return player;
     }
     
     public IEnumerable<ScoreRow> ScoreTable(IScoreAlgorithm scoreAlgorithm)
     {
         var currentPosition = 1;
-        var nextOutPosition = _players.Count(x => x.IsOut(_currentRoundIndex)) + 1;
+        var nextOutPosition = _players.Count(x => !x.IsOut(_currentRoundIndex));
         var scoreGrouped = _players.GroupBy(x =>
             x.TotalScore(scoreAlgorithm) + (x.IsOut(_currentRoundIndex) ? 0 : scoreAlgorithm.GetScore(nextOutPosition))
         ).OrderByDescending(x => x.Key);
@@ -62,12 +72,12 @@ public class ScoreBoard
 
     public void Out(Player player)
     {
-        var position = _players.Count(x => x.IsOut(_currentRoundIndex)) + 1;
+        var position = _players.Count - _players.Count(x => x.IsOut(_currentRoundIndex));
         player.Out(position, _currentRoundIndex);
 
-        if (_players.Count(x => x.IsOut(_currentRoundIndex)) == _players.Count() - 1)
+        if (_players.Count(x => !x.IsOut(_currentRoundIndex)) == 1)
         {
-            _players.First(x => !x.IsOut(_currentRoundIndex)).Out(_players.Count(), _currentRoundIndex);
+            _players.First(x => !x.IsOut(_currentRoundIndex)).Out(1, _currentRoundIndex);
             
             if(_currentRoundIndex < _totalRounds-1)
                 _currentRoundIndex += 1;
@@ -79,7 +89,7 @@ public class ScoreBoard
     public override string ToString()
     {
         var stringBuilder = new StringBuilder();
-        stringBuilder.AppendLine($"{_currentRoundIndex}:{_totalRounds}");
+        stringBuilder.AppendLine($"{_currentRoundIndex}:{_totalRounds}:{_playing}");
 
         foreach (var player in _players)
             stringBuilder.AppendLine(player.ToString());
@@ -91,7 +101,7 @@ public class ScoreBoard
         
     }
 
-    public static ScoreBoard FromState(string state)
+    public void LoadState(string state)
     {
         var bytes = System.Convert.FromBase64String(state);
         var convertedState = System.Text.Encoding.UTF8.GetString(bytes);
@@ -99,15 +109,20 @@ public class ScoreBoard
         var lines = convertedState.Split(Environment.NewLine);
         var scoreboardConfigArgs = lines[0].Split(":");
         
-        var scoreBoard = new ScoreBoard();
-        scoreBoard._currentRoundIndex = Convert.ToInt32(scoreboardConfigArgs[0]);
-        scoreBoard._totalRounds = Convert.ToInt32(scoreboardConfigArgs[1]);
+        _currentRoundIndex = Convert.ToInt32(scoreboardConfigArgs[0]);
+        _totalRounds = Convert.ToInt32(scoreboardConfigArgs[1]);
+        _playing = Convert.ToBoolean(scoreboardConfigArgs[2]);
 
+        _players.Clear();
+        
         for (int i = 1; i < lines.Length; i++)
             if(!string.IsNullOrEmpty(lines[i]))
-                scoreBoard.AddPlayer(Player.FromState(lines[i]));
-
-        return scoreBoard;
-
+                _players.Add(Player.FromState(lines[i]));
     }
+
+    public bool IsPlaying() => _playing;
+
+    public bool IsRegisteringPlayers() => !_playing;
+
+    public IEnumerable<Player> ListPlayers() => _players;
 }

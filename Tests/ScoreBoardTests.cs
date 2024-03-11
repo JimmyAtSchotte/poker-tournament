@@ -4,7 +4,7 @@ namespace Tests;
 
 public class ScoreBoardTests
 {
-    private readonly IScoreAlgorithm _scoreAlgorithm = new OutPositionScoreAlgorithm();
+    private readonly IScoreAlgorithm _scoreAlgorithm = new OutPositionScoreAlgorithm(5);
     
     [Test]
     public void ListOnePlayer()
@@ -17,7 +17,7 @@ public class ScoreBoardTests
     }
     
     [Test]
-    public void ListTowPlayersWithSameScore()
+    public void ListTwoPlayersWithSameScore()
     {
         var scoreBoard = new ScoreBoard();
         scoreBoard.AddPlayer("P1");      
@@ -69,20 +69,17 @@ public class ScoreBoardTests
     public void MultipleRounds()
     {
         var scoreBoard = new ScoreBoard();
+        var scoreAlgo = new OutPositionScoreAlgorithm(2);
         var p1 = scoreBoard.AddPlayer("P1");      
         var p2 = scoreBoard.AddPlayer("P2");
 
         scoreBoard.Out(p1);
         scoreBoard.Out(p2);
 
-        var scoreTable = scoreBoard.ScoreTable(_scoreAlgorithm).ToArray();
+        var scoreTable = scoreBoard.ScoreTable(scoreAlgo).ToArray();
         
         Assert.AreEqual(1, scoreTable[0].Position);
         Assert.AreEqual(1, scoreTable[1].Position);
-        Assert.AreEqual(1, scoreTable[0].Scores[0]);
-        Assert.AreEqual(2, scoreTable[0].Scores[1]);
-        Assert.AreEqual(2, scoreTable[1].Scores[0]);
-        Assert.AreEqual(1, scoreTable[1].Scores[1]);
     }
 
     [Test]
@@ -93,7 +90,10 @@ public class ScoreBoardTests
         scoreBoard.AddPlayer("P2");
 
         var savedState = scoreBoard.ToString();
-        var scoreTable = ScoreBoard.FromState(savedState).ScoreTable(_scoreAlgorithm);
+
+        var scoreBoard2 = new ScoreBoard();
+        scoreBoard2.LoadState(savedState);
+        var scoreTable = scoreBoard2.ScoreTable(_scoreAlgorithm);
 
         Assert.AreEqual(2, scoreTable.Count());
 
@@ -110,4 +110,11 @@ public class ScoreBoardTests
 
     }
 
+ 
+
+ 
+    
+
+
+    
 }

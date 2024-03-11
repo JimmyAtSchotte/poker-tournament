@@ -1,0 +1,34 @@
+﻿<Card Margin="Margin.Is2">
+                <CardHeader Background="Background.Primary"
+                            TextColor="TextColor.White">
+                    Poängtabell
+                </CardHeader>
+                <CardBody>
+                    <CardText>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell>#</TableHeaderCell>
+                                    <TableHeaderCell>Poäng</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+
+                            <TableBody>
+                                @foreach (var score in ScoreTable.OrderBy(x => x.Key))
+                                {
+                                    <TableRow>
+                                        <TableRowCell>@score.Key</TableRowCell>
+                                        <TableRowCell>@(score.Value)p</TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardText>
+                </CardBody>
+            </Card>
+
+@code {
+    [Parameter]
+    public IDictionary<int, int> ScoreTable { get; set; }
+    
+}

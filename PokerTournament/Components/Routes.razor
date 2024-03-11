@@ -1,6 +1,76 @@
-﻿<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
-    </Found>
-</Router>
+﻿
+
+<Blazorise.ThemeProvider Theme="@theme">
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)"/>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
+        </Found>
+    </Router>
+</Blazorise.ThemeProvider>
+
+@code{
+
+  private Theme theme = CreateTheme(new ThemeColor(67, 160, 71));
+
+    private static Theme CreateTheme(ThemeColor color)
+    {
+        var theme = new Theme();
+
+        theme.ColorOptions = new ThemeColorOptions();
+        theme.BackgroundOptions = new ThemeBackgroundOptions();
+        theme.TextColorOptions = new ThemeTextColorOptions();
+        theme.BarOptions = new ThemeBarOptions();
+
+        theme.ColorOptions.Primary = color.ToRGBA();
+        theme.BackgroundOptions.Primary = color.ToRGBA();
+        theme.TextColorOptions.Primary = color.ToRGBA();
+        theme.BackgroundOptions.Dark = color.Dark();
+        
+        
+        theme.BarOptions.DarkColors = new ThemeBarColorOptions();
+        theme.BarOptions.DarkColors.BackgroundColor = color.ToRGBA();
+        theme.BarOptions.DarkColors.Color = "#FFFFFF";
+        theme.BarOptions.DarkColors.BrandColorOptions = new ThemeBarBrandColorOptions();
+        theme.BarOptions.DarkColors.BrandColorOptions.BackgroundColor = color.ToRGBA();
+        theme.BarOptions.DarkColors.ItemColorOptions = new ThemeBarItemColorOptions();
+        theme.BarOptions.DarkColors.ItemColorOptions.ActiveColor = "#FFFFFF";
+        theme.BarOptions.DarkColors.ItemColorOptions.ActiveBackgroundColor = color.ToRGBA();
+        theme.BarOptions.DarkColors.ItemColorOptions.HoverColor = "#FFFFFF";
+        theme.BarOptions.DarkColors.ItemColorOptions.HoverBackgroundColor = color.ToRGBA();
+
+        theme.BarOptions.LightColors = new ThemeBarColorOptions();
+        theme.BarOptions.LightColors.BackgroundColor = color.ToRGBA();
+        theme.BarOptions.LightColors.Color = "#000000";
+        theme.BarOptions.LightColors.BrandColorOptions = new ThemeBarBrandColorOptions();
+        theme.BarOptions.LightColors.BrandColorOptions.BackgroundColor = color.ToRGBA(0.6);
+        theme.BarOptions.LightColors.ItemColorOptions = new ThemeBarItemColorOptions();
+        theme.BarOptions.LightColors.ItemColorOptions.ActiveColor = "#000000";
+        theme.BarOptions.LightColors.ItemColorOptions.ActiveBackgroundColor = color.ToRGBA(0.6);
+        theme.BarOptions.LightColors.ItemColorOptions.HoverColor = "#000000";
+        theme.BarOptions.LightColors.ItemColorOptions.HoverBackgroundColor = color.ToRGBA(0.6);
+
+        theme.InputOptions = new ThemeInputOptions();
+        theme.InputOptions.CheckColor = color.ToRGBA();
+        theme.InputOptions.SliderColor = color.ToRGBA();
+
+        return theme;
+    }
+
+    private class ThemeColor(int red, int green, int blue)
+    {
+        
+        
+        public string ToRGBA(double alpha = 1)
+        {
+            return $"rgba({red}, {green}, {blue}, {alpha})";
+        }
+
+        public string Dark(double alpha = 1)
+        {
+            var modifier = 80;
+            
+            return $"rgba({Math.Max(0, red-modifier)}, {Math.Max(0, green-modifier)}, {Math.Max(0, blue-modifier)}, {alpha})";
+        }
+    }
+}

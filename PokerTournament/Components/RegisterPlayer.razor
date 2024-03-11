@@ -1,0 +1,42 @@
+﻿<Card  Margin="Margin.Is2">
+    <CardHeader Background="Background.Primary"
+                TextColor="TextColor.White">
+        Registera spelare
+    </CardHeader>
+    <CardBody>
+        <CardText>
+            <Field>
+                <FieldLabel>Namn:</FieldLabel>
+                <TextEdit @bind-Text="@name"></TextEdit>
+            </Field>
+        </CardText>
+    </CardBody>
+
+    <CardFooter Background="Background.Light">
+        <Button Float="Float.Start" Color="Color.Primary" @onclick="async () => await AddPlayer()">Registera</Button>
+        <Button Float="Float.End" Color="Color.Secondary" @onclick="async () => await Complete()">Börja spela</Button>
+        
+        </CardFooter>
+</Card>
+
+@code {
+    private string name;
+    
+    [Parameter]
+    public EventCallback<string> OnRegisterPlayer { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> OnStartPlay { get; set; }
+    
+    private async Task AddPlayer()
+    {
+        await OnRegisterPlayer.InvokeAsync(name);
+        name = string.Empty;
+    }
+
+    private async Task Complete()
+    {
+        await OnStartPlay.InvokeAsync();
+    }
+
+}

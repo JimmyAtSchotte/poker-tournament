@@ -2,7 +2,7 @@
 
 public class Player
 {
-    private int[] _position;
+    public int[] _position;
 
     public Player(string name)
     {
@@ -28,7 +28,8 @@ public class Player
     }
 
     public bool IsOut(int index) => _position[index] > 0;
-
+    
+    
     public override string ToString()
     {
         return $"{Name}:{string.Join(',', _position)}";

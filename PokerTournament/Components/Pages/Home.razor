@@ -1,100 +1,160 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 @implements IDisposable
+@inject IJSRuntime JSRuntime  
 
-<PageTitle>POKER</PageTitle>
+<PageTitle>POKER: 9 MARS 2024</PageTitle>
 
-<Container>
-    <Row>
-        <Column ColumnSize="ColumnSize.Is8">
-            <Card>
-                <CardHeader>Spelare</CardHeader>
-                <CardBody>
-                    <CardText>
-                        
-                        <Table FixedHeader FixedHeaderTableHeight="300px">
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHeaderCell>#</TableHeaderCell>
-                                    <TableHeaderCell>Spelare</TableHeaderCell>
-                                    <TableHeaderCell>Poäng runda 1</TableHeaderCell>
-                                    <TableHeaderCell>Poäng runda 2</TableHeaderCell>
-                                    <TableHeaderCell>Total poäng</TableHeaderCell>
-                                    <TableHeaderCell></TableHeaderCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @foreach(var row in _scoreBoard.ScoreTable(_scoreAlgorithm))
-                                {
-                                    <TableRow @key="@row.Player.Name">
-                                        <TableRowHeader>@row.Position</TableRowHeader>
-                                        <TableRowCell>@row.Player.Name</TableRowCell>
-                                        <TableRowCell>@row.Scores[0]</TableRowCell>
-                                        <TableRowCell>@row.Scores[1]</TableRowCell>
-                                        <TableRowCell>@row.TotalScore</TableRowCell>
-                                        <TableRowCell>
-                                            @if (row.IsStillInTheGame)
+<Layout>
+    <LayoutHeader TextAlignment="TextAlignment.Center"
+                  Background="Background.Dark"
+                  TextColor="TextColor.White"
+                  Padding="Padding.Is3">
+       <Heading Size="HeadingSize.Is1">POKER 40</Heading>
+    </LayoutHeader>
+    <LayoutContent Background="Background.Body"
+                   TextColor="TextColor.Body"
+                   Padding="Padding.Is3">
+        
+        @if (_scoreBoard.IsRegisteringPlayers())
+        {
+            <Container>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is8" TextAlignment="TextAlignment.Center">
+                        <Image Source="img/swish-QR-large.png" Width="Width.Is50"></Image>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+
+                        <RegisterPlayer OnRegisterPlayer="AddPlayer" OnStartPlay="StartPlaying"></RegisterPlayer>
+                        <RegisteredPlayers Players="_scoreBoard.ListPlayers()"></RegisteredPlayers>
+                    </Column>
+                </Row>
+            </Container>
+        }
+        else
+        {
+            <Container>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is8">
+                        <Card Margin="Margin.Is2">
+                            <CardHeader Background="Background.Primary"
+                                        TextColor="TextColor.White">
+                                Spelare
+                            </CardHeader>
+                            <CardBody>
+                                <CardText>
+
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHeaderCell>#</TableHeaderCell>
+                                                <TableHeaderCell>Spelare</TableHeaderCell>
+                                                <TableHeaderCell ColumnSpan="2">Runda 1</TableHeaderCell>
+                                                <TableHeaderCell ColumnSpan="2">Runda 2</TableHeaderCell>
+                                                <TableHeaderCell>Total poäng</TableHeaderCell>
+                                                <TableHeaderCell></TableHeaderCell>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            @foreach (var row in _scoreBoard.ScoreTable(_scoreAlgorithm))
                                             {
-                                                <Button @onclick="() => Out(row.Player)">Ute</Button>
+                                                <TableRow @key="@row.Player.Name">
+                                                    <TableRowHeader>@row.Position</TableRowHeader>
+                                                    <TableRowCell>@row.Player.Name</TableRowCell>
+                                                    <TableRowCell>@PrintPosition(row.Player, 0)</TableRowCell>
+                                                    <TableRowCell>@PrintScore(row, 0)</TableRowCell>
+                                                    <TableRowCell>@PrintPosition(row.Player, 1)</TableRowCell>
+                                                    <TableRowCell>@PrintScore(row, 1)</TableRowCell>
+                                                    <TableRowCell>@row.TotalScore p</TableRowCell>
+                                                    <TableRowCell>
+                                                        @if (row.IsStillInTheGame)
+                                                        {
+                                                            <Button Color="Color.Primary" @onclick="() => Out(row.Player)">Ute</Button>
+                                                        }
+                                                    </TableRowCell>
+                                                </TableRow>
                                             }
-                                        </TableRowCell>
-                                    </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-                
-                        <Button @onclick="Undo">Ångra</Button>
-                        <Button @onclick="Redo">Gör om</Button>
-                    </CardText>
-                </CardBody>
-            </Card>
-        </Column>
-        <Column ColumnSize="ColumnSize.Is4">
-            <Card>
-                <CardHeader>Registera spelare</CardHeader>
-                <CardBody>
-                    <CardText>
-                        <Field>
-                            <FieldLabel>Namn:</FieldLabel>
-                            <TextEdit @bind-Text="@name"></TextEdit>
-                        </Field>
-                    </CardText>
-                </CardBody>
+                                        </TableBody>
+                                    </Table>
 
-                <CardFooter>
-                    <Button @onclick="AddPlayer">Registera</Button>
-                </CardFooter>
-            </Card>
-        </Column>
-    </Row>
-</Container>
+                                </CardText>
+                            </CardBody>
+                        </Card>
+
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PointsTable ScoreTable="_scoreAlgorithm.GetScoreTable()"></PointsTable>
+                        <Prizes PrizeRows="_prizeRows"></Prizes>
+                        </Column>
+                </Row>
+            </Container>
+        }
+
+
+    </LayoutContent>
+    <LayoutFooter TextAlignment="TextAlignment.Center"
+                  Background="Background.Dark"
+                  TextColor="TextColor.White"
+                  Padding="Padding.Is3"
+                  Fixed="true">
+        <Button Float="Float.End" Margin="Margin.Is2" 
+                @onclick="Undo" 
+                Color="Color.Light" 
+                TextColor="TextColor.Primary"
+                Disabled="!_memento.CanUndo()"
+                >Ångra</Button>
+        <Button Float="Float.End" Margin="Margin.Is2" 
+                @onclick="Redo" 
+                Color="Color.Light" 
+                TextColor="TextColor.Primary"
+                Disabled="!_memento.CanRedo()">Gör om</Button>
+    </LayoutFooter>
+</Layout>
+
 
 
 @code {
-    private string name;
-
+    private const decimal BUY_IN = 250;
+    private PrizeTable _prizeTable = new PrizeTable(BUY_IN);
     private ScoreBoard _scoreBoard = new ScoreBoard();
-    private IScoreAlgorithm _scoreAlgorithm = new OutPositionScoreAlgorithm();
+    private IScoreAlgorithm _scoreAlgorithm = new ProcentProgressiveAlgorithm(1000, 0);
     private Memento<string> _memento = new Memento<string>();
-    
-    
-    protected override void OnInitialized()
+    private IEnumerable<PrizeRow> _prizeRows = Enumerable.Empty<PrizeRow>();
+
+    protected override async Task OnInitializedAsync()
     {
         _scoreBoard.OnChange += ScoreBoardOnOnChange;
         
-        _scoreBoard.AddPlayer("Jimmy");
-        _scoreBoard.AddPlayer("Peter");
-        _scoreBoard.AddPlayer("Patrik");
-        _scoreBoard.AddPlayer("Staffan");
         
-        base.OnInitialized();
+        await base.OnInitializedAsync();
     }
 
-  
-    private void AddPlayer()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            await base.OnAfterRenderAsync(firstRender);
+            return;
+        }
+
+        
+        var state = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "STATE");
+        if (!string.IsNullOrEmpty(state))
+        {
+            _memento = Memento<string>.Create(state);
+            _scoreBoard.LoadState(_memento.GetLastState());
+            _prizeRows = _prizeTable.GetPrizeTable(_scoreBoard.NumberOfPlayers);
+            StateHasChanged();
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+
+    private Task AddPlayer(string name)
     {
         _scoreBoard.AddPlayer(name);
-        name = string.Empty;
+        return Task.CompletedTask;
     }
 
     private void Out(Player player)
@@ -102,30 +162,29 @@
         _scoreBoard.Out(player);
     }
 
-    private void AddSavedState()
-    {
-        _memento.Push(_scoreBoard.ToString());
-    }
-
     private void Undo()
     {
         var restoreState = _memento.Undo();
-        
-        if(!string.IsNullOrEmpty(restoreState))
-            _scoreBoard = ScoreBoard.FromState(restoreState);
+
+        if (!string.IsNullOrEmpty(restoreState))
+            _scoreBoard.LoadState(restoreState);
     }
 
     private void Redo()
     {
         var restoreState = _memento.Redo();
-        
-        if(!string.IsNullOrEmpty(restoreState))
-            _scoreBoard = ScoreBoard.FromState(restoreState);
+
+        if (!string.IsNullOrEmpty(restoreState)) 
+            _scoreBoard.LoadState(restoreState);
     }
-    
+
     private void ScoreBoardOnOnChange(object? sender, EventArgs e)
     {
         _memento.Push(_scoreBoard.ToString());
+        _scoreAlgorithm = new ProcentProgressiveAlgorithm(1000, _scoreBoard.NumberOfPlayers);
+        _prizeRows = _prizeTable.GetPrizeTable(_scoreBoard.NumberOfPlayers);
+        
+       Task.Run(async () =>  await JSRuntime.InvokeVoidAsync("localStorage.setItem", "STATE", _memento.ToString()));
     }
 
     public void Dispose()
@@ -133,4 +192,25 @@
         _scoreBoard.OnChange -= ScoreBoardOnOnChange;
     }
 
+    private Task StartPlaying()
+    {
+        _scoreBoard.StartPlaying();
+        return Task.CompletedTask;
+    }
+
+    private string PrintPosition(Player player, int index)
+    {
+        if (player._position[index] == 0)
+            return string.Empty;
+
+        return $"# {player._position[index]}";
+    }
+    
+    private string PrintScore(ScoreRow scoreRow, int index)
+    {
+        if (scoreRow.Player._position[index] == 0)
+            return string.Empty;
+
+        return $"{scoreRow.Scores[index]} p";
+    }
 }

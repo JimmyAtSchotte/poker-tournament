@@ -1,0 +1,35 @@
+﻿
+@if(Players?.Any() == true)
+{
+    <Card  Margin="Margin.Is2">
+        <CardHeader Background="Background.Primary"
+                    TextColor="TextColor.White">
+            Registerade spelare
+        </CardHeader>
+        <CardBody>
+            <CardText>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell>Namn</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                        @foreach (var player in Players)
+                        {
+                            <TableRow>
+                                <TableRowCell>@player.Name</TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </CardText>
+        </CardBody>
+    </Card>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<Player> Players { get; set; }
+}
